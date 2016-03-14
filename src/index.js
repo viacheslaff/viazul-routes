@@ -1,4 +1,4 @@
-define(['stops', 'routes'], function (stops, routes) {
+define(['stops', 'routes', 'ui'], function (stops, routes, ui) {
 
     var schedule = generateSchedule(routes);
     printSchedule(schedule);

@@ -3,15 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <title>Viazul Routes</title>
+    <link rel="stylesheet" href="styles/style.css">
     <script src="lib/require.js"></script>
     <script>
         require.config({
-            baseUrl: "src"
+            baseUrl: "src",
+            paths: {
+                'async': '../lib/async'
+            }
         });
         require(["index"]);
     </script>
 </head>
 <body>
-
+    <div id="main-map"></div>
 </body>
 </html>
