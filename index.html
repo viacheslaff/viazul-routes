@@ -2,8 +2,14 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Document</title>
-    <script src="index.js"></script>
+    <title>Viazul Routes</title>
+    <script src="lib/require.js"></script>
+    <script>
+        require.config({
+            baseUrl: "src"
+        });
+        require(["index"]);
+    </script>
 </head>
 <body>
 
