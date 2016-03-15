@@ -8,6 +8,8 @@ define([
         currentFrom,
         markers = {},
         polylines = [],
+        itineraries = [],
+        reachableStops = [],
         infoElement = document.getElementById('info');
 
     map = new google.maps.Map(document.getElementById('main-map'), {
@@ -30,11 +32,32 @@ define([
             markers[name] = new google.maps.Marker({
                 position: stops[name].position,
                 map: map,
-                title: name
+                title: name,
+                icon: getIcon(name),
             });
 
             markers[name].addListener('click', selectFrom.bind(this, name));
         }
+    }
+
+    function getIcon(stopName) {
+        var icon = {
+            path: google.maps.SymbolPath.BACKWARD_CLOSED_ARROW,
+            scale: 5,
+            fillColor: 'grey',
+            fillOpacity: 1,
+            strokeColor: 'black',
+            strokeWeight: 1
+        };
+
+        if (stopName === currentFrom) {
+            icon.fillColor = 'orange';
+        }
+        else if (reachableStops.indexOf(stopName) !== -1) {
+            icon.fillColor = 'green';
+        }
+
+        return icon;
     }
 
     function drawPolylines() {
@@ -42,8 +65,6 @@ define([
             polylines[i].setMap(null);
         }
         polylines = [];
-
-        var itineraries = schedule.getItinerariesFrom(currentFrom);
 
         for (var i = 0; i < itineraries.length; i++) {
             var legs = itineraries[i],
@@ -80,25 +101,21 @@ define([
         }
     }
 
-    var flightPlanCoordinates = [
-        {lat: 37.772, lng: -122.214},
-        {lat: 21.291, lng: -157.821},
-        {lat: -18.142, lng: 178.431},
-        {lat: -27.467, lng: 153.027}
-    ];
-    var flightPath = new google.maps.Polyline({
-        path: flightPlanCoordinates,
-        geodesic: true,
-        strokeColor: '#FF0000',
-        strokeOpacity: 1.0,
-        strokeWeight: 2
-    });
-
-    flightPath.setMap(map);
-
 
     function selectFrom(from) {
         currentFrom = from;
+        itineraries = schedule.getItinerariesFrom(currentFrom);
+
+        reachableStops = [];
+
+        itineraries.forEach(function(itinerary) {
+            itinerary.forEach(function(leg) {
+                if (reachableStops.indexOf(leg.to) === -1) {
+                    reachableStops.push(leg.to)
+                }
+            })
+        });
+
         logInfo();
         redrawMap();
     }
