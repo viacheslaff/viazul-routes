@@ -9,7 +9,7 @@ define([
         markers = {},
         polylines = [],
         itineraries = [],
-        reachableStops = [],
+        changesToStop = {},
         infoElement = document.getElementById('info');
 
     map = new google.maps.Map(document.getElementById('main-map'), {
@@ -53,8 +53,8 @@ define([
         if (stopName === currentFrom) {
             icon.fillColor = 'orange';
         }
-        else if (reachableStops.indexOf(stopName) !== -1) {
-            icon.fillColor = 'green';
+        else if (changesToStop.hasOwnProperty(stopName)) {
+            icon.fillColor = changesToStop[stopName] === 0 ? 'green' : 'lime';
         }
 
         return icon;
@@ -94,7 +94,7 @@ define([
         if (currentFrom) {
             infoElement.innerHTML =
                 'Routes from ' + currentFrom + '\n' +
-                schedule.printItinerariesFrom(currentFrom);
+                schedule.printItineraries(itineraries);
         }
         else {
             infoElement.innerHTML = '';
@@ -106,14 +106,21 @@ define([
         currentFrom = from;
         itineraries = schedule.getItinerariesFrom(currentFrom);
 
-        reachableStops = [];
+        changesToStop = {};
 
         itineraries.forEach(function(itinerary) {
+            var routeIds = [],
+                to = itinerary[itinerary.length-1].to;
+
             itinerary.forEach(function(leg) {
-                if (reachableStops.indexOf(leg.to) === -1) {
-                    reachableStops.push(leg.to)
+                if (routeIds.indexOf(leg.routeId) === -1) {
+                    routeIds.push(leg.routeId)
                 }
-            })
+            });
+
+            if (!changesToStop.hasOwnProperty(to) || changesToStop[to] > routeIds.length-1) {
+                changesToStop[to] = routeIds.length-1;
+            }
         });
 
         logInfo();

@@ -1,4 +1,4 @@
-define(function () {
+define(['stops'], function (stops) {
     var routes = [];
 
     // Viñales – Habana
@@ -57,6 +57,29 @@ define(function () {
         ['Cienfuegos', '17:55'],
         ['Trinidad', '19:35']
     ]);
+
+
+    function stringTimeToDate(string) {
+        var date = new Date(),
+            hhmm = string.split(':');
+
+        date.setHours(hhmm[0], hhmm[1], 0, 0);
+
+        return date;
+    }
+
+    routes = routes.map(function (route) {
+        return route.map(function (stop) {
+            if (!stops.hasOwnProperty(stop[0])) {
+                throw new Error('Unknown stop: ' + stop[0]);
+            }
+
+            return {
+                name: stop[0],
+                time: stringTimeToDate(stop[1])
+            };
+        });
+    });
 
     return routes;
 });

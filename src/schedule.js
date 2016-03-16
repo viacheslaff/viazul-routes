@@ -1,13 +1,4 @@
-define(['stops', 'routes', 'ui'], function (stops, routes, ui) {
-
-    function stringTimeToDate(string) {
-        var date = new Date(),
-            hhmm = string.split(':');
-
-        date.setHours(hhmm[0], hhmm[1], 0, 0);
-
-        return date;
-    }
+define(['stops', 'routes'], function (stops, routes) {
 
     function formatTime(date) {
         var hours = date.getHours(),
@@ -27,39 +18,26 @@ define(['stops', 'routes', 'ui'], function (stops, routes, ui) {
     Schedule.prototype._generateSchedule = function (routes) {
         var schedule = {};
 
-        routes.forEach(function (route) {
-
-            route = route.map(function (stop) {
-                if (!stops.hasOwnProperty(stop[0])) {
-                    throw new Error('Unknown stop: ' + stop[0]);
-                }
-
-                return {
-                    name: stop[0],
-                    time: stringTimeToDate(stop[1])
-                };
-            });
+        routes.forEach(function (route, routeId) {
 
             var routeName = route[0].name + ' – ' + route[route.length - 1].name;
 
             for (var i = 0; i < route.length - 1; i++) {
-                var from = route[i];
+                var from = route[i],
+                    to = route[i+1];
 
                 if (!schedule.hasOwnProperty(from.name)) {
                     schedule[from.name] = [];
                 }
 
-                for (var j = i + 1; j < route.length; j++) {
-                    var to = route[j];
-
-                    schedule[from.name].push({
-                        departure: from.time,
-                        arrival: to.time,
-                        from: from.name,
-                        to: to.name,
-                        route: routeName
-                    });
-                }
+                schedule[from.name].push({
+                    departure: from.time,
+                    arrival: to.time,
+                    from: from.name,
+                    to: to.name,
+                    routeId: routeId,
+                    route: routeName
+                });
             }
         });
 
@@ -94,7 +72,7 @@ define(['stops', 'routes', 'ui'], function (stops, routes, ui) {
 
         if (this._schedule[fromName]) {
             var legs = this._schedule[fromName].filter(function (leg) {
-                return leg.departure > after;
+                return leg.departure >= after;
             });
 
             legs.sort(function (a, b) {
@@ -120,12 +98,36 @@ define(['stops', 'routes', 'ui'], function (stops, routes, ui) {
         return itineraries;
     };
 
-    Schedule.prototype.printItinerariesFrom = function (fromName) {
-        var itineraries = this.getItinerariesFrom(fromName),
-            result = '';
+    Schedule.prototype.printItineraries = function (itineraries) {
+        var result = '';
 
         for (var i = 0; i < itineraries.length; i++) {
-            result += itineraries[i]
+            var directLegs = itineraries[i].reduce(
+                function (legs, newLeg) {
+                    var lastLeg = legs[legs.length-1];
+
+                    if (lastLeg && lastLeg.routeId === newLeg.routeId &&
+                        lastLeg.arrival === newLeg.departure && lastLeg.to === newLeg.from) {
+
+                        legs[legs.length-1] = {
+                            departure: lastLeg.departure,
+                            from: lastLeg.from,
+                            arrival: newLeg.arrival,
+                            to: newLeg.to,
+                            routeId: lastLeg.routeId,
+                            route: lastLeg.route
+                        };
+                    }
+                    else {
+                        legs.push(newLeg);
+                    }
+
+                    return legs;
+                },
+                []
+            );
+
+            result += directLegs
                 .map(function (leg) {
                     return formatTime(leg.departure) + ' – ' + formatTime(leg.arrival) + ' ' + leg.to;
                 })
