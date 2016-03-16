@@ -6,6 +6,7 @@ define([
 
     var map,
         currentFrom,
+        currentTo,
         markers = {},
         polylines = [],
         itineraries = [],
@@ -33,10 +34,10 @@ define([
                 position: stops[name].position,
                 map: map,
                 title: name,
-                icon: getIcon(name),
+                icon: getIcon(name)
             });
 
-            markers[name].addListener('click', selectFrom.bind(this, name));
+            markers[name].addListener('click', onMarkerClick.bind(this, name));
         }
     }
 
@@ -53,8 +54,11 @@ define([
         if (stopName === currentFrom) {
             icon.fillColor = 'orange';
         }
+        else if (stopName === currentTo) {
+            icon.fillColor = 'red';
+        }
         else if (changesToStop.hasOwnProperty(stopName)) {
-            icon.fillColor = changesToStop[stopName] === 0 ? 'green' : 'lime';
+            icon.fillColor = changesToStop[stopName] === 0 ? 'lime' : 'green' ;
         }
 
         return icon;
@@ -93,18 +97,92 @@ define([
     function logInfo() {
         if (currentFrom) {
             infoElement.innerHTML =
-                'Routes from ' + currentFrom + '\n' +
-                schedule.printItineraries(itineraries);
+                '<h3>Routes from ' + currentFrom + (currentTo ? ' to ' +  currentTo: '') + '</h3>\n' +
+                printItineraries(itineraries);
         }
         else {
             infoElement.innerHTML = '';
         }
     }
 
+    function printItineraries(itineraries) {
+        var result = '';
 
-    function selectFrom(from) {
+        for (var i = 0; i < itineraries.length; i++) {
+            var directLegs = itineraries[i].reduce(
+                function (legs, newLeg) {
+                    var lastLeg = legs[legs.length-1];
+
+                    if (lastLeg && lastLeg.routeId === newLeg.routeId &&
+                        lastLeg.arrival === newLeg.departure && lastLeg.to === newLeg.from) {
+
+                        legs[legs.length-1] = {
+                            departure: lastLeg.departure,
+                            from: lastLeg.from,
+                            arrival: newLeg.arrival,
+                            to: newLeg.to,
+                            routeId: lastLeg.routeId,
+                            route: lastLeg.route
+                        };
+                    }
+                    else {
+                        legs.push(newLeg);
+                    }
+
+                    return legs;
+                },
+                []
+            );
+
+            result += '<p>';
+            result += directLegs
+                .map(function (leg) {
+                    return formatTime(leg.departure) + ' – ' + formatTime(leg.arrival) + ' ' + leg.to;
+                })
+                .join(' => ');
+
+            result += '</p>\n';
+        }
+
+        return result;
+    }
+
+    function formatTime(date) {
+        var hours = date.getHours(),
+            minutes = date.getMinutes();
+
+        if (minutes < 10) {
+            minutes = '0' + minutes;
+        }
+        return '' + hours + ':' + minutes;
+    }
+
+    function onMarkerClick(stopName) {
+        var from,
+            to;
+
+        if (!currentFrom || currentTo) {
+            from = stopName;
+            to = undefined;
+        }
+        else {
+            from = currentFrom;
+            to = stopName;
+        }
+
+        selectFromTo(from, to);
+    }
+
+    function selectFromTo(from, to) {
         currentFrom = from;
+        currentTo = to;
         itineraries = schedule.getItinerariesFrom(currentFrom);
+
+        if (currentTo) {
+            itineraries = itineraries.filter(function (itinerary) {
+                return to === itinerary[itinerary.length-1].to;
+            });
+        }
 
         changesToStop = {};
 
