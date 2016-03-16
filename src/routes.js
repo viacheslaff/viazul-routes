@@ -58,6 +58,44 @@ define(['stops'], function (stops) {
         ['Trinidad', '19:35']
     ]);
 
+    // Varadero - Trinidad
+    routes.push([
+        ['Varadero', '07:30'],
+        ['Santa Clara', '11:10'],
+        ['Sancti Spiritus', '12:40'],
+        ['Trinidad', '14:05']
+    ]);
+
+    // Trinidad - Varadero
+    routes.push([
+        ['Trinidad', '15:00'],
+        ['Cienfuegos', '16:40'],
+        ['Santa Clara', '18:00'],
+        ['Entronque de Jagüey', '19:50'],
+        ['Varadero', '21:25']
+    ]);
+
+    // Baracoa - Santiago de Cuba
+    routes.push([
+        ['Baracoa', '14:00'],
+        ['Guantanamo', '17:35'],
+        ['Santiago de Cuba', '19:00']
+    ]);
+
+    // Santiago de Cuba - Baracoa
+    routes.push([
+        ['Santiago de Cuba', '08:00'],
+        ['Guantanamo', '09:25'],
+        ['Baracoa', '13:00']
+    ]);
+
+    // Viñales - Trinidad
+    routes.push([
+        ['Viñales', '14:00'],
+        ['Pinar del Rio', '14:50'],
+        ['Cienfuegos', '16:40'],
+        ['Trinidad', '18:05']
+    ]);
 
     function stringTimeToDate(string) {
         var date = new Date(),

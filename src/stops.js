@@ -10,6 +10,12 @@ define(['async!http://maps.google.com/maps/api/js?sensor=false'], function() {
         'Aeropuerto de Varadero': { position: new google.maps.LatLng(23.0398960,-81.4369400) },
         'Playa Girón': { position: new google.maps.LatLng(22.0690840,-81.0257760) },
         'Cienfuegos': { position: new google.maps.LatLng(22.1575191,-80.4453278) },
-        'Trinidad': { position: new google.maps.LatLng(21.7960340,-79.9808140) }
+        'Trinidad': { position: new google.maps.LatLng(21.7960340,-79.9808140) },
+        'Santa Clara': { position: new google.maps.LatLng(22.4243980,-79.9416550) },
+        'Sancti Spiritus': { position: new google.maps.LatLng(21.9327550,-79.4366320) },
+        'Baracoa': { position: new google.maps.LatLng(20.3474810,-74.5023820) },
+        'Santiago de Cuba': { position: new google.maps.LatLng(20.0169300,-75.8301540) },
+        'Guantanamo': { position: new google.maps.LatLng(20.1400090,-75.2129000) },
+        'Entronque de Jagüey': { position: new google.maps.LatLng(0, 0) /*TODO*/ },
     }
 });
