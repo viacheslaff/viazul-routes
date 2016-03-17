@@ -8,14 +8,14 @@ define([
         currentFrom,
         currentTo,
         markers = {},
-        polylines = [],
+        polylines = {},
         itineraries = [],
         changesToStop = {},
         infoElement = document.getElementById('info');
 
     map = new google.maps.Map(document.getElementById('main-map'), {
-        center: stops['Habana'].position,
-        zoom: 8
+        center: stops['Santa Clara'].position,
+        zoom: 7
     });
 
     function redrawMap() {
@@ -65,32 +65,39 @@ define([
     }
 
     function drawPolylines() {
-        for (var i = 0; i < polylines.length; i++) {
-            polylines[i].setMap(null);
+        for (var routeKey in polylines) {
+            polylines[routeKey].setMap(null);
+            delete polylines[routeKey];
         }
-        polylines = [];
 
         for (var i = 0; i < itineraries.length; i++) {
             var legs = itineraries[i],
-                path = [];
+                path = [],
+                routeKey = [];
 
             path.push(stops[legs[0].from].position);
+            routeKey.push(legs[0].from);
 
             for (var j = 0; j < legs.length; j++) {
                 path.push(stops[legs[j].to].position);
+                routeKey.push(legs[j].to);
             }
 
-            var polyline = new google.maps.Polyline({
-                path: path,
-                geodesic: true,
-                strokeColor: '#FF0000',
-                strokeOpacity: 1.0,
-                strokeWeight: 2
-            });
+            routeKey = routeKey.join('-');
 
-            polyline.setMap(map);
+            if (!polylines.hasOwnProperty(routeKey)) {
+                var polyline = new google.maps.Polyline({
+                    path: path,
+                    geodesic: false,
+                    strokeColor: '#FF0000',
+                    strokeOpacity: 1.0,
+                    strokeWeight: 2
+                });
 
-            polylines.push(polyline);
+                polyline.setMap(map);
+
+                polylines[routeKey] = polyline;
+            }
         }
     }
 

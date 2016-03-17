@@ -33,7 +33,7 @@ define(['stops', 'routes'], function (stops, routes) {
         return schedule;
     };
 
-    Schedule.prototype.getItinerariesFrom = function (fromName, after) {
+    Schedule.prototype.getItinerariesFrom = function (fromName, after, forbiddenStops) {
         var itineraries = [];
 
         if (!after) {
@@ -41,9 +41,14 @@ define(['stops', 'routes'], function (stops, routes) {
             after.setHours(0, 0, 0, 0);
         }
 
+        if (!forbiddenStops) {
+            forbiddenStops = [];
+        }
+
         if (this._schedule[fromName]) {
             var legs = this._schedule[fromName].filter(function (leg) {
-                return leg.departure >= after;
+                return leg.departure >= after &&
+                       (forbiddenStops.indexOf(leg.to) === -1);
             });
 
             legs.sort(function (a, b) {
@@ -52,7 +57,7 @@ define(['stops', 'routes'], function (stops, routes) {
 
             for (var i = 0; i < legs.length; i++) {
                 var leg = legs[i],
-                    nextItineraries = this.getItinerariesFrom(leg.to, leg.arrival);
+                    nextItineraries = this.getItinerariesFrom(leg.to, leg.arrival, forbiddenStops.concat(leg.from));
 
                 itineraries.push([leg]);
 
