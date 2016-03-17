@@ -69,16 +69,27 @@ define(['stops', 'routes'], function (stops, routes) {
 
                 var newPreviousRoutes = (previousRoutes.indexOf(leg.routeId) === -1) ? previousRoutes.concat(leg.routeId) : previousRoutes;
 
-                if (newPreviousRoutes.length < Schedule.ROUTES_LIMIT) {
-                    nextItineraries = this.getItinerariesFrom(
-                        leg.to,
-                        leg.arrival,
-                        previousStops.concat(leg.from),
-                        newPreviousRoutes
-                    );
+                nextItineraries = this.getItinerariesFrom(
+                    leg.to,
+                    leg.arrival,
+                    previousStops.concat(leg.from),
+                    newPreviousRoutes
+                );
 
-                    if (nextItineraries.length > 0) {
-                        for (var j = 0; j < nextItineraries.length; j++) {
+                if (nextItineraries.length > 0) {
+                    for (var j = 0; j < nextItineraries.length; j++) {
+                        var newItinerary = [leg].concat(nextItineraries[j]),
+                            routeIds;
+
+                        routeIds = newItinerary
+                            .map(function(leg) {
+                                return leg.routeId;
+                            })
+                            .filter(function(value, index, self) {
+                                return self.indexOf(value) === index;
+                            });
+
+                        if (routeIds.length <= Schedule.ROUTES_LIMIT) {
                             itineraries.push(
                                 [leg].concat(nextItineraries[j])
                             );
