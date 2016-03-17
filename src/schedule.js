@@ -4,6 +4,8 @@ define(['stops', 'routes'], function (stops, routes) {
         this._schedule = this._generateSchedule(routes);
     };
 
+    Schedule.ROUTES_LIMIT = 2;
+
     Schedule.prototype._generateSchedule = function (routes) {
         var schedule = {};
 
@@ -33,7 +35,7 @@ define(['stops', 'routes'], function (stops, routes) {
         return schedule;
     };
 
-    Schedule.prototype.getItinerariesFrom = function (fromName, after, forbiddenStops) {
+    Schedule.prototype.getItinerariesFrom = function (fromName, after, previousStops, previousRoutes) {
         var itineraries = [];
 
         if (!after) {
@@ -41,14 +43,18 @@ define(['stops', 'routes'], function (stops, routes) {
             after.setHours(0, 0, 0, 0);
         }
 
-        if (!forbiddenStops) {
-            forbiddenStops = [];
+        if (!previousStops) {
+            previousStops = [];
+        }
+
+        if (!previousRoutes) {
+            previousRoutes = [];
         }
 
         if (this._schedule[fromName]) {
             var legs = this._schedule[fromName].filter(function (leg) {
                 return leg.departure >= after &&
-                       (forbiddenStops.indexOf(leg.to) === -1);
+                       (previousStops.indexOf(leg.to) === -1);
             });
 
             legs.sort(function (a, b) {
@@ -57,15 +63,26 @@ define(['stops', 'routes'], function (stops, routes) {
 
             for (var i = 0; i < legs.length; i++) {
                 var leg = legs[i],
-                    nextItineraries = this.getItinerariesFrom(leg.to, leg.arrival, forbiddenStops.concat(leg.from));
+                    nextItineraries;
 
                 itineraries.push([leg]);
 
-                if (nextItineraries.length > 0) {
-                    for (var j = 0; j < nextItineraries.length; j++) {
-                        itineraries.push(
-                            [leg].concat(nextItineraries[j])
-                        );
+                var newPreviousRoutes = (previousRoutes.indexOf(leg.routeId) === -1) ? previousRoutes.concat(leg.routeId) : previousRoutes;
+
+                if (newPreviousRoutes.length < Schedule.ROUTES_LIMIT) {
+                    nextItineraries = this.getItinerariesFrom(
+                        leg.to,
+                        leg.arrival,
+                        previousStops.concat(leg.from),
+                        newPreviousRoutes
+                    );
+
+                    if (nextItineraries.length > 0) {
+                        for (var j = 0; j < nextItineraries.length; j++) {
+                            itineraries.push(
+                                [leg].concat(nextItineraries[j])
+                            );
+                        }
                     }
                 }
             }

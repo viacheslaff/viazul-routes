@@ -21,8 +21,8 @@ define(['async!http://maps.google.com/maps/api/js?sensor=false'], function() {
         'Holguín': { position: new google.maps.LatLng(20.8795130,-76.2594980) },
         'Las Tunas': { position: new google.maps.LatLng(20.9579380,-76.9527840) },
         'Camagüey': { position: new google.maps.LatLng(21.3926030,-77.9053180) },
-        'Ciego de Avila': { position: new google.maps.LatLng() },
-        'Cárdenas': { position: new google.maps.LatLng(21.8405360,-78.7589560) },
+        'Ciego de Avila': { position: new google.maps.LatLng(21.8405360,-78.7589560) },
+        'Cárdenas': { position: new google.maps.LatLng(23.0365510,-81.2133260) },
         'Boca (Giron)': { position: new google.maps.LatLng(22.3669833,-81.1650932) },
     }
 });
