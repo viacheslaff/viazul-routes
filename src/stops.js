@@ -24,5 +24,10 @@ define(['async!http://maps.google.com/maps/api/js?sensor=false'], function() {
         'Ciego de Avila': { position: new google.maps.LatLng(21.8405360,-78.7589560) },
         'Cárdenas': { position: new google.maps.LatLng(23.0365510,-81.2133260) },
         'Boca (Giron)': { position: new google.maps.LatLng(22.3669833,-81.1650932) },
+        'Cayo Santa María': { position: new google.maps.LatLng(22.6495040,-78.9797270) },
+        'Cayo Ensenachos': { position: new google.maps.LatLng(22.6437630,-79.0885120) },
+        'Cayo Las Brujas': { position: new google.maps.LatLng(22.6236110,-79.1538890) },
+        'Caibarien': { position: new google.maps.LatLng(22.5064670,-79.4760130) },
+        'Remedios': { position: new google.maps.LatLng(22.4963480,-79.5462940) }
     }
 });

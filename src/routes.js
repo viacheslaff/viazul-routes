@@ -307,6 +307,30 @@ define(['stops'], function (stops) {
         ['Viñales', '17:10']
     ]);
 
+    // Trinidad - Cayo Santa María
+    routes.push([
+        ['Trinidad', '07:30'],
+        ['Cienfuegos', '08:45'],
+        ['Santa Clara', '10:15'],
+        ['Remedios', '11:35'],
+        ['Caibarien', '11:45'],
+        ['Cayo Las Brujas', '12:25'],
+        ['Cayo Ensenachos', '12:35'],
+        ['Cayo Santa María', '13:10']
+    ]);
+
+    // Cayo Santa María - Trinidad
+    routes.push([
+        ['Cayo Santa María', '14:10'],
+        ['Cayo Ensenachos', '14:40'],
+        ['Cayo Las Brujas', '14:50'],
+        ['Caibarien', '15:15'],
+        ['Remedios', '15:30'],
+        ['Santa Clara', '16:50'],
+        ['Cienfuegos', '18:30'],
+        ['Trinidad', '19:50']
+    ]);
+
     function stringTimeToDate(string) {
         var date = new Date(),
             hhmm = string.split(':');
