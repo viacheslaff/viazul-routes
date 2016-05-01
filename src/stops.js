@@ -1,4 +1,4 @@
-define(['async!http://maps.google.com/maps/api/js?sensor=false'], function() {
+define(function() {
     return {
         'Habana': { position: new google.maps.LatLng(23.1135920,-82.3665960)},
         'Terminal de Omnibus Habana': { position: new google.maps.LatLng(23.124418, -82.385906) },

@@ -1,7 +1,6 @@
 define([
     'stops',
-    'schedule',
-    'async!http://maps.google.com/maps/api/js?sensor=false'
+    'schedule'
 ], function(stops, schedule) {
 
     var map,
@@ -11,12 +10,18 @@ define([
         polylines = {},
         itineraries = [],
         changesToStop = {},
+        infoElement;
+
+    function init() {
         infoElement = document.getElementById('info');
 
-    map = new google.maps.Map(document.getElementById('main-map'), {
-        center: stops['Santa Clara'].position,
-        zoom: 7
-    });
+        map = new google.maps.Map(document.getElementById('main-map'), {
+            center: stops['Santa Clara'].position,
+            zoom: 7
+        });
+
+        redrawMap();
+    }
 
     function redrawMap() {
         drawMarkers();
@@ -212,5 +217,7 @@ define([
         redrawMap();
     }
 
-    redrawMap();
+    return {
+        init: init
+    };
 });
